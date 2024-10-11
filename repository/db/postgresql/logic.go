@@ -9,11 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateArticle stores a new article in database
+// Stores a new article into database
 func (p *postgresql) CreateArticle(article *entity.Article) error {
 	tagNames := getTagNames(*article)
 
-	// insert new tags and return both new and existing tag IDs by updating existing ones
+	// insert new Tags and return both new and existing Tag IDs by updating existing Tags
 	// raw query has been used because (*gorm.DB).Create returns ID only for the new entries by defaulf
 	var tagIDs []uint
 	query := `
@@ -46,6 +46,7 @@ func (p *postgresql) CreateArticle(article *entity.Article) error {
 	return nil
 }
 
+// Fetches an Article by its ID
 func (p *postgresql) GetArticle(articleID uint) (*entity.Article, error) {
 	var article *entity.Article
 	err := p.db.Preload("Tags").First(&article, articleID).Error
@@ -58,6 +59,7 @@ func (p *postgresql) GetArticle(articleID uint) (*entity.Article, error) {
 	return article, err
 }
 
+// Fetches a list of Articles filtered by their Tag name and Date
 func (p *postgresql) GetArticlesByTagAndDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
 	var articles []*entity.Article
 	var totalCount int64

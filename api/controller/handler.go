@@ -8,7 +8,7 @@ import (
 	"github.com/nidoqueen1/article-api/api/helper"
 )
 
-// CreateArticleHandler
+// Handler for endpoint POST /articles
 func (h *handler) CreateArticleHandler(c *gin.Context) {
 	var articleExtFormat adapter.ArticleExternalFormat
 	if err := c.ShouldBindJSON(&articleExtFormat); err != nil {
@@ -39,7 +39,7 @@ func (h *handler) CreateArticleHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"status": "success"})
 }
 
-// GetArticleHandler
+// Handler for endpoint GET /articles/{id}
 func (h *handler) GetArticleHandler(c *gin.Context) {
 	id := c.Param("id")
 	uintID, err := helper.StringToUint(id)
@@ -67,7 +67,7 @@ func (h *handler) GetArticleHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, ArticleExternalFormat)
 }
 
-// GetArticlesByTagHandler
+// Handler for endpoint GET /tags/{tagName}/{date}
 func (h *handler) GetArticlesByTagHandler(c *gin.Context) {
 	tagName := c.Param("tagName")
 	dateStr := c.Param("date")

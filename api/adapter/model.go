@@ -1,6 +1,6 @@
 package adapter
 
-// Custom struct to format the response with a properly formatted date
+// Extarnal API-format of the Article
 type ArticleExternalFormat struct {
 	ID    uint     `json:"id"`
 	Title string   `json:"title"`
@@ -9,6 +9,8 @@ type ArticleExternalFormat struct {
 	Tags  []string `json:"tags"`
 }
 
+// Extarnal API-format of a list of Articles
+// used in endpoint GET /tags/{tagName}/{date}
 type ArticleListExternalFormat struct {
 	Tag         string   `json:"tag"`
 	Count       int64    `json:"count"`

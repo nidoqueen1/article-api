@@ -15,7 +15,7 @@ func SanitizeArticle(article *entity.Article) {
 	article.Body = p.Sanitize(article.Body)
 }
 
-// ValidateArticle
+// Validates an Article based on its validate tags
 func ValidateArticle(article *entity.Article) error {
 	validate := validator.New()
 

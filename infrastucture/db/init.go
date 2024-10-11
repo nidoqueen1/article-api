@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Database factory
 func InitDatabase(dbType string, l *logrus.Logger) (db.IDatabase, error) {
 	switch dbType {
 	case "postgresql":

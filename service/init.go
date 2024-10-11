@@ -10,6 +10,7 @@ type service struct {
 	logger *logrus.Logger
 }
 
+// Initialized service instance
 func Init(db db.IDatabase, l *logrus.Logger) IService {
 	return &service{
 		db:     db,

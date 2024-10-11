@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// MapToList
+// Converts keys of a Map to a list
 func MapToList(m map[string]struct{}) []string {
 	list := []string{}
 	for key := range m {
@@ -14,7 +14,7 @@ func MapToList(m map[string]struct{}) []string {
 	return list
 }
 
-// StringToInt
+// Converts string to Uint
 func StringToUint(s string) (uint, error) {
 	u64, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {
@@ -23,7 +23,7 @@ func StringToUint(s string) (uint, error) {
 	return uint(u64), nil
 }
 
-// StringToDate
+// Pars string as time.Time
 func StringToDate(s string) (time.Time, error) {
 	var formats = []string{
 		"2006-01-02", // YYYY-MM-DD

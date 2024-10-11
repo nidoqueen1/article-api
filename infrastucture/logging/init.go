@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Initialized logger
 func InitLog() *logrus.Logger {
 	logger := logrus.New()
 	logger.SetLevel(getLogLevel())
@@ -14,6 +15,7 @@ func InitLog() *logrus.Logger {
 	return logger
 }
 
+// Defines log level from the config
 func getLogLevel() logrus.Level {
 	switch strings.ToLower(viper.GetString("log.level")) {
 	case DebugMode:

@@ -1,5 +1,4 @@
 FROM golang:1.20 AS builder
-
 COPY . /app
 WORKDIR /app
 RUN go mod download

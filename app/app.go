@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Initializes the application's elements and creates a Router to serve the endpoints
 func New() *gin.Engine {
 	logger := logging.InitLog()
 

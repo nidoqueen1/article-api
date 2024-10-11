@@ -8,6 +8,7 @@ import (
 	"github.com/nidoqueen1/article-api/entity"
 )
 
+// ConvertToArticleExternal converts internal DB-format of Article to its external API-format
 func ConvertToArticleExternal(article *entity.Article) *ArticleExternalFormat {
 	return &ArticleExternalFormat{
 		ID:    article.ID,
@@ -18,8 +19,9 @@ func ConvertToArticleExternal(article *entity.Article) *ArticleExternalFormat {
 	}
 }
 
-// ConvertToArticleListExternalFormat
-func ConvertToArticleListExternalFormat(articles []*entity.Article, tagName string, count int64) *ArticleListExternalFormat {
+// ConvertToArticleListExternalFormat converts a list of Articles to the format proper for GET /tags/{tagName}/{date} API
+func ConvertToArticleListExternalFormat(
+	articles []*entity.Article, tagName string, count int64) *ArticleListExternalFormat {
 	res := &ArticleListExternalFormat{
 		Tag:   tagName,
 		Count: count,
@@ -28,7 +30,7 @@ func ConvertToArticleListExternalFormat(articles []*entity.Article, tagName stri
 	return res
 }
 
-// c
+// ConvertToInternalArticle onverts external API-format of Article to its internal DB-format
 func ConvertToInternalArticle(extArticle *ArticleExternalFormat) (*entity.Article, error) {
 	var (
 		tags []*entity.Tag
@@ -58,7 +60,7 @@ func ConvertToInternalArticle(extArticle *ArticleExternalFormat) (*entity.Articl
 	return inArticle, nil
 }
 
-// extractIDsAndTags
+// extractIDsAndTags extracts Article IDs and related_Tag_names from a list of Articles
 func extractIDsAndTags(articles []*entity.Article, tagName string) ([]uint, []string) {
 	relatedTags := make(map[string]struct{})
 	articleIDs := []uint{}
@@ -74,7 +76,7 @@ func extractIDsAndTags(articles []*entity.Article, tagName string) ([]uint, []st
 	return articleIDs, helper.MapToList(relatedTags)
 }
 
-// Helper function to convert []*Tag to []string
+// getTagNames extracts Tag names from a list of Tags
 func getTagNames(tags []*entity.Tag) []string {
 	var tagNames []string
 	for _, tag := range tags {

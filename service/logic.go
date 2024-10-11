@@ -6,6 +6,7 @@ import (
 	"github.com/nidoqueen1/article-api/entity"
 )
 
+// Service logic of creation an Article
 func (s *service) CreateArticle(article *entity.Article) error {
 	s.logger.Infof("Creating article with title: %s", article.Title)
 	if article.Date.IsZero() {
@@ -23,6 +24,7 @@ func (s *service) CreateArticle(article *entity.Article) error {
 	return nil
 }
 
+// Service logic of fetching an Article by its ID
 func (s *service) GetArticle(articleID uint) (*entity.Article, error) {
 	s.logger.Infof("Fetching article with ID: %d", articleID)
 	article, err := s.db.GetArticle(articleID)
@@ -37,6 +39,7 @@ func (s *service) GetArticle(articleID uint) (*entity.Article, error) {
 	return article, nil
 }
 
+// Service logic of fetching a list of Articles filtered by their Tag name and Date
 func (s *service) GetArticlesByTagAndDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
 	s.logger.Infof("Fetching articles for tag: %s on date: %s", tagName, date.Format("2006-01-02"))
 	articles, count, err := s.db.GetArticlesByTagAndDate(tagName, date)
