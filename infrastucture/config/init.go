@@ -9,7 +9,7 @@ func InitConfig() error {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yml")
 	viper.AddConfigPath(".")
-	_ = viper.BindEnv("db.url", "DB_URL")
+	_ = viper.BindEnv("db.url", "DATABASE_URL")
 
 	err := viper.ReadInConfig()
 	if err != nil {
