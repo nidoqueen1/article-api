@@ -34,6 +34,7 @@ func (p *postgresql) CreateArticle(article *entity.Article) error {
 	}
 
 	// insert the article without tags first, clearing tags to avoid auto-insertion them
+	article.Tags = nil
 	if err := p.db.Create(article).Error; err != nil {
 		return err
 	}
