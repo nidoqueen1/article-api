@@ -11,10 +11,7 @@ import (
 
 // CreateArticle stores a new article in database
 func (p *postgresql) CreateArticle(article *entity.Article) error {
-	tagNames := []string{}
-	for _, tag := range article.Tags {
-		tagNames = append(tagNames, tag.Name)
-	}
+	tagNames := getTagNames(*article)
 
 	// insert new tags and return both new and existing tag IDs by updating existing ones
 	// raw query has been used because (*gorm.DB).Create returns ID only for the new entries by defaulf
