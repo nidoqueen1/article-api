@@ -40,8 +40,12 @@ func Init(logger *logrus.Logger) (db.IDatabase, error) {
 	// }
 
 	logger.Info("Connected to the PostgreSQL database.")
+	return New(db, logger), nil
+}
+
+func New(db *gorm.DB, logger *logrus.Logger) db.IDatabase {
 	return &postgresql{
 		db:     db,
 		logger: logger,
-	}, nil
+	}
 }
