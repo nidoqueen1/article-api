@@ -8,7 +8,7 @@ import (
 	"github.com/nidoqueen1/article-api/entity"
 )
 
-func ConvertToArticleResponse(article *entity.Article) *ArticleExternalFormat {
+func ConvertToArticleExternal(article *entity.Article) *ArticleExternalFormat {
 	return &ArticleExternalFormat{
 		ID:    article.ID,
 		Title: article.Title,
@@ -19,8 +19,8 @@ func ConvertToArticleResponse(article *entity.Article) *ArticleExternalFormat {
 }
 
 // ConvertToArticleListExternalFormat
-func ConvertToArticleListExternalFormat(articles []*entity.Article, tagName string, count int64) *articleListExternalFormat {
-	res := &articleListExternalFormat{
+func ConvertToArticleListExternalFormat(articles []*entity.Article, tagName string, count int64) *ArticleListExternalFormat {
+	res := &ArticleListExternalFormat{
 		Tag:   tagName,
 		Count: count,
 	}

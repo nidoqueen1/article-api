@@ -9,7 +9,7 @@ type ArticleExternalFormat struct {
 	Tags  []string `json:"tags"`
 }
 
-type articleListExternalFormat struct {
+type ArticleListExternalFormat struct {
 	Tag         string   `json:"tag"`
 	Count       int64    `json:"count"`
 	Articles    []uint   `json:"articles"`

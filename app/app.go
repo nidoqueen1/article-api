@@ -26,7 +26,7 @@ func New() *gin.Engine {
 	service := service.Init(db, logger)
 	handler := controller.Init(service, logger)
 	router := gin.Default()
-	controller.SetupRoutes(router, *handler)
+	controller.SetupRoutes(router, handler)
 	logger.Infof("Listening on %s . . .", viper.GetString("server.addr"))
 
 	return router
