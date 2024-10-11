@@ -1,0 +1,50 @@
+package service
+
+import (
+	"time"
+
+	"github.com/nidoqueen1/article-api/entity"
+)
+
+func (s *service) CreateArticle(article *entity.Article) error {
+	s.logger.Infof("Creating article with title: %s", article.Title)
+	if article.Date.IsZero() {
+		todayDate := time.Date(
+			time.Now().Year(), time.Now().Month(), time.Now().Day(),
+			0, 0, 0, 0, time.UTC)
+		article.Date = todayDate
+	}
+
+	if err := s.db.CreateArticle(article); err != nil {
+		s.logger.Errorf("Error creating article: %v", err)
+		return err
+	}
+	s.logger.Infof("Successfully created article with ID: %d", article.ID)
+	return nil
+}
+
+func (s *service) GetArticle(articleID uint) (*entity.Article, error) {
+	s.logger.Infof("Fetching article with ID: %d", articleID)
+	article, err := s.db.GetArticle(articleID)
+
+	if err != nil {
+		s.logger.Errorf("Error fetching article with ID %d: %v", articleID, err)
+		return nil, err
+	}
+	if article == nil {
+		s.logger.Warnf("No article found with ID: %d", articleID)
+	}
+	return article, nil
+}
+
+func (s *service) GetArticlesByTagDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
+	s.logger.Infof("Fetching articles for tag: %s on date: %s", tagName, date.Format("2006-01-02"))
+	articles, count, err := s.db.GetArticlesByTagAndDate(tagName, date)
+
+	if err != nil {
+		s.logger.Errorf("Error fetching articles for tag %s on date %s: %v", tagName, date.Format("2006-01-02"), err)
+		return nil, 0, err
+	}
+	s.logger.Infof("Found %d articles for tag: %s on date: %s", len(articles), tagName, date.Format("2006-01-02"))
+	return articles, count, nil
+}
