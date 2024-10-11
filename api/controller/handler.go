@@ -61,7 +61,7 @@ func (h *handler) GetArticleHandler(c *gin.Context) {
 	}
 
 	// Sanitize the article's content
-	helper.SanitizeArticleContent(article)
+	helper.SanitizeArticle(article)
 
 	ArticleExternalFormat := adapter.ConvertToArticleExternal(article)
 	c.JSON(http.StatusOK, ArticleExternalFormat)

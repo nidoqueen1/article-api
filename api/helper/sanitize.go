@@ -6,8 +6,8 @@ import (
 	"github.com/nidoqueen1/article-api/entity"
 )
 
-// SanitizeArticleContent sanitizes the title and body of an article to prevent XSS attacks
-func SanitizeArticleContent(article *entity.Article) {
+// SanitizeArticle sanitizes the title and body of an article to prevent XSS attacks
+func SanitizeArticle(article *entity.Article) {
 	// UGCPolicy() allows only user-generated content that is safe
 	p := bluemonday.UGCPolicy()
 
