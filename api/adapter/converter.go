@@ -19,8 +19,8 @@ func ConvertToArticleExternal(article *entity.Article) *ArticleExternalFormat {
 }
 
 // ConvertToArticleListExternalFormat
-func ConvertToArticleListExternalFormat(articles []*entity.Article, tagName string, count int64) *articleListExternalFormat {
-	res := &articleListExternalFormat{
+func ConvertToArticleListExternalFormat(articles []*entity.Article, tagName string, count int64) *ArticleListExternalFormat {
+	res := &ArticleListExternalFormat{
 		Tag:   tagName,
 		Count: count,
 	}
