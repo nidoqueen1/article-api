@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -31,6 +32,11 @@ func TestConvertToArticleExternal(t *testing.T) {
 		}
 
 		result := adapter.ConvertToArticleExternal(article)
+
+		// sort slices' elements to prevent mismatching in require.Equal
+		sort.Strings(expected.Tags)
+		sort.Strings(result.Tags)
+		
 		require.Equal(t, expected, result)
 	})
 

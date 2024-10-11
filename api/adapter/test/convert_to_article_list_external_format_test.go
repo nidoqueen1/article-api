@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -45,6 +46,19 @@ func TestConvertToArticleListExternalFormat(t *testing.T) {
 		}
 
 		result := adapter.ConvertToArticleListExternalFormat(articles, tagName, count)
+
+		// sort slices' elements to prevent mismatching in require.Equal
+		sort.Strings(expected.RelatedTags)
+		sort.Strings(result.RelatedTags)
+		var intIDs []int
+		for _, id := range result.Articles {
+			intIDs = append(intIDs, int(id))
+		}
+		sort.Ints(intIDs)
+		for i, id := range intIDs {
+			result.Articles[i] = uint(id)
+		}
+
 		require.Equal(t, expected, result)
 	})
 
