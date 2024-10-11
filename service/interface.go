@@ -9,5 +9,5 @@ import (
 type IService interface {
 	CreateArticle(article *entity.Article) error
 	GetArticle(articleID uint) (*entity.Article, error)
-	GetArticlesByTagDate(tagName string, date time.Time) ([]*entity.Article, int64, error)
+	GetArticlesByTagAndDate(tagName string, date time.Time) ([]*entity.Article, int64, error)
 }

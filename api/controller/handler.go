@@ -84,7 +84,7 @@ func (h *handler) GetArticlesByTagHandler(c *gin.Context) {
 		return
 	}
 
-	articles, count, err := h.service.GetArticlesByTagDate(tagName, date)
+	articles, count, err := h.service.GetArticlesByTagAndDate(tagName, date)
 	if err != nil {
 		h.logger.Errorf("Articles not found, internal error: %s, tag name: %s, date: %s",
 			err, tagName, dateStr)

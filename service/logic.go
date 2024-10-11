@@ -37,7 +37,7 @@ func (s *service) GetArticle(articleID uint) (*entity.Article, error) {
 	return article, nil
 }
 
-func (s *service) GetArticlesByTagDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
+func (s *service) GetArticlesByTagAndDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
 	s.logger.Infof("Fetching articles for tag: %s on date: %s", tagName, date.Format("2006-01-02"))
 	articles, count, err := s.db.GetArticlesByTagAndDate(tagName, date)
 
