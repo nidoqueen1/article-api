@@ -54,6 +54,8 @@ docker-compose up --build
 ## Environment Variables
 `DATABASE_URL`: The connection URL for the PostgreSQL database.
 
+Although it can be set in the file `config.yml` as well.
+
 ## Running Tests
 To run the tests:
 ``` bash
