@@ -3,7 +3,6 @@ package postgresql
 import (
 	"fmt"
 
-	"github.com/nidoqueen1/article-api/entity"
 	"github.com/nidoqueen1/article-api/repository/db"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -33,11 +32,12 @@ func Init(logger *logrus.Logger) (db.IDatabase, error) {
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetConnMaxLifetime(5 * 60)
 
-	err = db.AutoMigrate(&entity.Article{}, &entity.Tag{}, &entity.ArticleTag{})
-	if err != nil {
-		logger.Error("failed to migrate schema: ", err)
-		return nil, fmt.Errorf("failed to migrate schema: %s", err)
-	}
+	// to run locally without Docker for the first time, to create tables
+	// err = db.AutoMigrate(&entity.Article{}, &entity.Tag{}, &entity.ArticleTag{})
+	// if err != nil {
+	// 	logger.Error("failed to migrate schema: ", err)
+	// 	return nil, fmt.Errorf("failed to migrate schema: %s", err)
+	// }
 
 	logger.Info("Connected to the PostgreSQL database.")
 	return &postgresql{
