@@ -1,0 +1,9 @@
+server:
+  addr: ":8080"
+db:
+  type: "postgresql"
+  url: "postgres://neda@localhost:5432/articledb?sslmode=disable"
+list_articles:
+  limit: 10
+log:
+  level: "info"
