@@ -11,7 +11,7 @@ import (
 func InitDatabase(dbType string, l *logrus.Logger) (db.IDatabase, error) {
 	switch dbType {
 	case "postgresql":
-		return postgresql.InitDB(l)
+		return postgresql.Init(l)
 	default:
 		return nil, fmt.Errorf("unsupported database type: %s", dbType)
 	}
