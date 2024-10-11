@@ -30,7 +30,8 @@ func (h *handler) CreateArticleHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.CreateArticle(article); err != nil {
+	ctx := c.Request.Context()
+	if err := h.service.CreateArticle(ctx, article); err != nil {
 		h.logger.Errorf("Failed to save article: %v, error: %s", article, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save article"})
 		return
@@ -49,7 +50,8 @@ func (h *handler) GetArticleHandler(c *gin.Context) {
 		return
 	}
 
-	article, err := h.service.GetArticle(uintID)
+	ctx := c.Request.Context()
+	article, err := h.service.GetArticle(ctx, uintID)
 	if err != nil {
 		h.logger.Errorf("Article not found, internal error: %s, ID: %s", err, id)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
@@ -84,7 +86,8 @@ func (h *handler) GetArticlesByTagHandler(c *gin.Context) {
 		return
 	}
 
-	articles, count, err := h.service.GetArticlesByTagAndDate(tagName, date)
+	ctx := c.Request.Context()
+	articles, count, err := h.service.GetArticlesByTagAndDate(ctx, tagName, date)
 	if err != nil {
 		h.logger.Errorf("Articles not found, internal error: %s, tag name: %s, date: %s",
 			err, tagName, dateStr)

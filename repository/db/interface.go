@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"time"
 
 	"github.com/nidoqueen1/article-api/entity"
@@ -8,7 +9,7 @@ import (
 
 // Interface type of general database related methods
 type IDatabase interface {
-	CreateArticle(article *entity.Article) error
-	GetArticle(articleID uint) (*entity.Article, error)
-	GetArticlesByTagAndDate(tagName string, date time.Time) ([]*entity.Article, int64, error)
+	CreateArticle(ctx context.Context, article *entity.Article) error
+	GetArticle(ctx context.Context, articleID uint) (*entity.Article, error)
+	GetArticlesByTagAndDate(ctx context.Context, tagName string, date time.Time) ([]*entity.Article, int64, error)
 }
