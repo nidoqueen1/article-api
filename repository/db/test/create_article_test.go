@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -40,7 +41,7 @@ func TestCreateArticle(t *testing.T) {
 	mock.ExpectExec(`INSERT INTO article_tags`).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
-	err := mockDB.CreateArticle(article)
+	err := mockDB.CreateArticle(context.TODO(), article)
 	require.NoError(t, err)
 
 	err = mock.ExpectationsWereMet()

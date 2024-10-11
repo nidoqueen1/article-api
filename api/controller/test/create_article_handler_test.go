@@ -2,6 +2,7 @@ package test_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -24,7 +25,7 @@ func TestCreateArticleHandler(t *testing.T) {
 	// Successful case
 	t.Run("Success", func(t *testing.T) {
 		mockService := &mocks.IService{}
-		mockService.On("CreateArticle", mock.Anything).Return(nil)
+		mockService.On("CreateArticle", context.TODO(), mock.Anything).Return(nil)
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)
@@ -138,7 +139,7 @@ func TestCreateArticleHandler(t *testing.T) {
 	// Internal server error
 	t.Run("Internal Server Error", func(t *testing.T) {
 		mockService := &mocks.IService{}
-		mockService.On("CreateArticle", mock.Anything).Return(errors.New("database error"))
+		mockService.On("CreateArticle", context.TODO(), mock.Anything).Return(errors.New("database error"))
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)

@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -51,7 +52,7 @@ func TestGetArticlesByTagHandler(t *testing.T) {
 		}
 
 		mockService := &mocks.IService{}
-		mockService.On("GetArticlesByTagAndDate", tagName, date).Return(returningArticles, int64(len(returningArticles)), nil)
+		mockService.On("GetArticlesByTagAndDate", context.TODO(), tagName, date).Return(returningArticles, int64(len(returningArticles)), nil)
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)
@@ -124,7 +125,7 @@ func TestGetArticlesByTagHandler(t *testing.T) {
 		date, _ := time.Parse("2006-01-02", dateStr)
 
 		mockService := &mocks.IService{}
-		mockService.On("GetArticlesByTagAndDate", tagName, date).Return(nil, int64(0), errors.New("database error"))
+		mockService.On("GetArticlesByTagAndDate", context.TODO(), tagName, date).Return(nil, int64(0), errors.New("database error"))
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)

@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -52,7 +53,7 @@ func TestGetArticle_success(t *testing.T) {
 		WithArgs(article.Tags[0].ID, article.Tags[1].ID).
 		WillReturnRows(tagRows)
 
-	result, err := mockDB.GetArticle(articleID)
+	result, err := mockDB.GetArticle(context.TODO(), articleID)
 	require.NoError(t, err)
 	require.NotNil(t, result)
 	require.Equal(t, article.ID, result.ID)
@@ -72,7 +73,7 @@ func TestGetArticle_NotFound(t *testing.T) {
 		WithArgs(articleID, 1).
 		WillReturnError(gorm.ErrRecordNotFound)
 
-	result, err := mockDB.GetArticle(articleID)
+	result, err := mockDB.GetArticle(context.TODO(), articleID)
 	require.NoError(t, err)
 	require.Nil(t, result)
 }

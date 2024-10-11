@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -57,8 +58,8 @@ func TestCreateArticle(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDB.On("CreateArticle", tt.inputArticle).Return(tt.mockCreateResp).Once()
-			err := svc.CreateArticle(tt.inputArticle)
+			mockDB.On("CreateArticle", context.TODO(), tt.inputArticle).Return(tt.mockCreateResp).Once()
+			err := svc.CreateArticle(context.TODO(), tt.inputArticle)
 
 			if tt.expectedError != nil {
 				assert.ErrorIs(t, err, tt.expectedError)

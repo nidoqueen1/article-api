@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -25,8 +26,8 @@ func TestGetArticlesByTagAndDate_Success(t *testing.T) {
 	}
 	expectedCount := int64(len(expectedArticles))
 
-	mockDB.On("GetArticlesByTagAndDate", tagName, date).Return(expectedArticles, expectedCount, nil)
-	articles, count, err := svc.GetArticlesByTagAndDate(tagName, date)
+	mockDB.On("GetArticlesByTagAndDate", context.TODO(), tagName, date).Return(expectedArticles, expectedCount, nil)
+	articles, count, err := svc.GetArticlesByTagAndDate(context.TODO(), tagName, date)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, articles)
@@ -44,8 +45,8 @@ func TestGetArticlesByTagAndDate_ErrorFetching(t *testing.T) {
 	date := time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC)
 	expectedErr := errors.New("database error")
 
-	mockDB.On("GetArticlesByTagAndDate", tagName, date).Return(nil, int64(0), expectedErr)
-	articles, count, err := svc.GetArticlesByTagAndDate(tagName, date)
+	mockDB.On("GetArticlesByTagAndDate", context.TODO(), tagName, date).Return(nil, int64(0), expectedErr)
+	articles, count, err := svc.GetArticlesByTagAndDate(context.TODO(), tagName, date)
 
 	assert.Error(t, err)
 	assert.Equal(t, expectedErr, err)
@@ -63,8 +64,8 @@ func TestGetArticlesByTagAndDate_NoArticlesFound(t *testing.T) {
 	date := time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC)
 
 	// simulate no articles found
-	mockDB.On("GetArticlesByTagAndDate", tagName, date).Return([]*entity.Article{}, int64(0), nil)
-	articles, count, err := svc.GetArticlesByTagAndDate(tagName, date)
+	mockDB.On("GetArticlesByTagAndDate", context.TODO(), tagName, date).Return([]*entity.Article{}, int64(0), nil)
+	articles, count, err := svc.GetArticlesByTagAndDate(context.TODO(), tagName, date)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, articles)
@@ -82,8 +83,8 @@ func TestGetArticlesByTagAndDate_InvalidDate(t *testing.T) {
 	invalidDate := time.Time{} // an invalid zero date
 
 	// simulate no articles found for invalid date
-	mockDB.On("GetArticlesByTagAndDate", tagName, invalidDate).Return([]*entity.Article{}, int64(0), nil)
-	articles, count, err := svc.GetArticlesByTagAndDate(tagName, invalidDate)
+	mockDB.On("GetArticlesByTagAndDate", context.TODO(), tagName, invalidDate).Return([]*entity.Article{}, int64(0), nil)
+	articles, count, err := svc.GetArticlesByTagAndDate(context.TODO(), tagName, invalidDate)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, articles)

@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -35,7 +36,7 @@ func TestGetArticleHandler(t *testing.T) {
 		}
 
 		mockService := &mocks.IService{}
-		mockService.On("GetArticle", mock.AnythingOfType("uint")).Return(returningArticle, nil)
+		mockService.On("GetArticle", context.TODO(), mock.AnythingOfType("uint")).Return(returningArticle, nil)
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)
@@ -90,7 +91,7 @@ func TestGetArticleHandler(t *testing.T) {
 	// Article Not Found
 	t.Run("Article Not Found", func(t *testing.T) {
 		mockService := &mocks.IService{}
-		mockService.On("GetArticle", mock.AnythingOfType("uint")).Return(nil, nil) // simulating article not found
+		mockService.On("GetArticle", context.TODO(), mock.AnythingOfType("uint")).Return(nil, nil) // simulating article not found
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)
@@ -113,7 +114,7 @@ func TestGetArticleHandler(t *testing.T) {
 	// Internal Server Error
 	t.Run("Internal Server Error", func(t *testing.T) {
 		mockService := &mocks.IService{}
-		mockService.On("GetArticle", mock.AnythingOfType("uint")).Return(nil, errors.New("database error"))
+		mockService.On("GetArticle", context.TODO(), mock.AnythingOfType("uint")).Return(nil, errors.New("database error"))
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)

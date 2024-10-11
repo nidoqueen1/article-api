@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -53,7 +54,7 @@ func TestGetArticlesByTagAndDate_success(t *testing.T) {
 		WithArgs(1, 2, 3).
 		WillReturnRows(tagRows)
 
-	articles, totalCount, err := mockDB.GetArticlesByTagAndDate(tagName, date)
+	articles, totalCount, err := mockDB.GetArticlesByTagAndDate(context.TODO(), tagName, date)
 	require.NoError(t, err)
 	require.Len(t, articles, 2)
 	require.Equal(t, int64(2), totalCount)
@@ -79,7 +80,7 @@ func TestGetArticlesByTagAndDate_NotFound(t *testing.T) {
 		WithArgs(tagName, date, 2).
 		WillReturnRows(sqlmock.NewRows([]string{}))
 
-	articles, totalCount, err := mockDB.GetArticlesByTagAndDate(tagName, date)
+	articles, totalCount, err := mockDB.GetArticlesByTagAndDate(context.TODO(), tagName, date)
 	require.NoError(t, err)
 	require.Empty(t, articles)
 	require.Equal(t, int64(0), totalCount)

@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -23,8 +24,8 @@ func TestGetArticle_Success(t *testing.T) {
 		Body:  "This is a sample article.",
 	}
 
-	mockDB.On("GetArticle", articleID).Return(expectedArticle, nil)
-	result, err := svc.GetArticle(articleID)
+	mockDB.On("GetArticle", context.TODO(), articleID).Return(expectedArticle, nil)
+	result, err := svc.GetArticle(context.TODO(), articleID)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -40,8 +41,8 @@ func TestGetArticle_ErrorFetching(t *testing.T) {
 	articleID := uint(2)
 	expectedErr := errors.New("database error")
 
-	mockDB.On("GetArticle", articleID).Return(nil, expectedErr)
-	result, err := svc.GetArticle(articleID)
+	mockDB.On("GetArticle", context.TODO(), articleID).Return(nil, expectedErr)
+	result, err := svc.GetArticle(context.TODO(), articleID)
 
 	assert.Error(t, err)
 	assert.Equal(t, expectedErr, err)
@@ -56,8 +57,8 @@ func TestGetArticle_NoArticleFound(t *testing.T) {
 
 	articleID := uint(3)
 
-	mockDB.On("GetArticle", articleID).Return(nil, nil) // Simulate no error but also no article found
-	result, err := svc.GetArticle(articleID)
+	mockDB.On("GetArticle", context.TODO(), articleID).Return(nil, nil) // Simulate no error but also no article found
+	result, err := svc.GetArticle(context.TODO(), articleID)
 
 	assert.NoError(t, err)
 	assert.Nil(t, result)
