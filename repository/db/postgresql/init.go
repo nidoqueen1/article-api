@@ -16,7 +16,7 @@ type postgresql struct {
 	logger *logrus.Logger
 }
 
-func InitDB(logger *logrus.Logger) (db.IDatabase, error) {
+func Init(logger *logrus.Logger) (db.IDatabase, error) {
 	db, err := gorm.Open(postgres.Open(viper.GetString("db.url")), &gorm.Config{})
 	if err != nil {
 		logger.Error("failed to connect to database: ", err)
