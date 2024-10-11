@@ -11,9 +11,9 @@ import (
 
 // CreateArticle stores a new article in database
 func (p *postgresql) CreateArticle(article *entity.Article) error {
-	tagNames := make([]string, len(article.Tags))
-	for i, tag := range article.Tags {
-		tagNames[i] = tag.Name
+	tagNames := []string{}
+	for _, tag := range article.Tags {
+		tagNames = append(tagNames, tag.Name)
 	}
 
 	// insert new tags and return both new and existing tag IDs by updating existing ones
