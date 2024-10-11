@@ -1,82 +1,70 @@
 package test_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nidoqueen1/article-api/api/adapter"
 	"github.com/nidoqueen1/article-api/api/controller"
-	"github.com/nidoqueen1/article-api/entity"
 	"github.com/nidoqueen1/article-api/service/test/mocks"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetArticleHandler(t *testing.T) {
+func TestCreateArticleHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	logger := logrus.New()
 
-	// Success case
+	// Successful case
 	t.Run("Success", func(t *testing.T) {
-		returningArticle := &entity.Article{
-			ID:    1,
-			Title: "Sample title",
-			Body:  "Sample body",
-			Date:  time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
-			Tags: []*entity.Tag{
-				{ID: 1, Name: "Tag name"},
-				{ID: 2, Name: "Another Tag name"},
-			},
-		}
-
 		mockService := &mocks.IService{}
-		mockService.On("GetArticle", mock.AnythingOfType("uint")).Return(returningArticle, nil)
+		mockService.On("CreateArticle", mock.Anything).Return(nil)
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)
 		controller.SetupRoutes(ginEngine, handler)
 
-		respRecorder := httptest.NewRecorder()
-		req, err := http.NewRequest("GET", "/articles/1", nil)
+		articleExtFormat := adapter.ArticleExternalFormat{
+			Title: "Sample Title",
+			Body:  "Sample Body",
+			Date:  "2023-01-01",
+			Tags:  []string{"Tag1", "Tag2"},
+		}
+		body, err := json.Marshal(articleExtFormat)
 		require.Nil(t, err)
 
+		req, err := http.NewRequest("POST", "/articles", bytes.NewBuffer(body))
+		require.Nil(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		respRecorder := httptest.NewRecorder()
 		ginEngine.ServeHTTP(respRecorder, req)
 
-		require.Equal(t, http.StatusOK, respRecorder.Code)
+		require.Equal(t, http.StatusCreated, respRecorder.Code)
 
 		var responseBody map[string]interface{}
 		err = json.Unmarshal(respRecorder.Body.Bytes(), &responseBody)
 		require.Nil(t, err)
-
-		require.Equal(t, returningArticle.ID, uint(responseBody["id"].(float64)))
-		require.Equal(t, returningArticle.Title, responseBody["title"].(string))
-		require.Equal(t, returningArticle.Body, responseBody["body"].(string))
-		require.Equal(t, returningArticle.Date.Format("2006-01-02"), responseBody["date"].(string))
-
-		expectedTags := []string{"Tag name", "Another Tag name"}
-		var responseTags []string
-		for _, tag := range responseBody["tags"].([]interface{}) {
-			responseTags = append(responseTags, tag.(string))
-		}
-		require.Equal(t, expectedTags, responseTags)
+		require.Equal(t, "success", responseBody["status"])
 	})
 
-	// Invalid ID Format
-	t.Run("Invalid ID Format", func(t *testing.T) {
-		mockService := &mocks.IService{}
+	// Invalid JSON payload
+	t.Run("Invalid JSON", func(t *testing.T) {
 		ginEngine := gin.Default()
-		handler := controller.Init(mockService, logger)
+		handler := controller.Init(&mocks.IService{}, logger)
 		controller.SetupRoutes(ginEngine, handler)
 
-		respRecorder := httptest.NewRecorder()
-		req, err := http.NewRequest("GET", "/articles/invalid-id", nil)
+		req, err := http.NewRequest("POST", "/articles", bytes.NewBuffer([]byte("invalid-json")))
 		require.Nil(t, err)
+		req.Header.Set("Content-Type", "application/json")
 
+		respRecorder := httptest.NewRecorder()
 		ginEngine.ServeHTTP(respRecorder, req)
 
 		require.Equal(t, http.StatusBadRequest, respRecorder.Code)
@@ -84,45 +72,92 @@ func TestGetArticleHandler(t *testing.T) {
 		var responseBody map[string]interface{}
 		err = json.Unmarshal(respRecorder.Body.Bytes(), &responseBody)
 		require.Nil(t, err)
-		require.Equal(t, "Invalid ID", responseBody["error"])
+		require.Equal(t, "Invalid request", responseBody["error"])
 	})
 
-	// Article Not Found
-	t.Run("Article Not Found", func(t *testing.T) {
-		mockService := &mocks.IService{}
-		mockService.On("GetArticle", mock.AnythingOfType("uint")).Return(nil, nil) // simulating article not found
-
+	// Not convertable payload
+	t.Run("Not Convertable Payload", func(t *testing.T) {
 		ginEngine := gin.Default()
-		handler := controller.Init(mockService, logger)
+		handler := controller.Init(&mocks.IService{}, logger)
 		controller.SetupRoutes(ginEngine, handler)
 
-		respRecorder := httptest.NewRecorder()
-		req, err := http.NewRequest("GET", "/articles/99999999", nil) // non-existing ID
+		articleExtFormat := adapter.ArticleExternalFormat{
+			Title: "Sample Title",
+			Body:  "Sample Body",
+			Date:  "invalid-date",
+			Tags:  []string{"Tag1", "Tag2"},
+		}
+		body, err := json.Marshal(articleExtFormat)
 		require.Nil(t, err)
 
+		req, err := http.NewRequest("POST", "/articles", bytes.NewBuffer(body))
+		require.Nil(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		respRecorder := httptest.NewRecorder()
 		ginEngine.ServeHTTP(respRecorder, req)
 
-		require.Equal(t, http.StatusNotFound, respRecorder.Code)
+		require.Equal(t, http.StatusBadRequest, respRecorder.Code)
 
 		var responseBody map[string]interface{}
 		err = json.Unmarshal(respRecorder.Body.Bytes(), &responseBody)
 		require.Nil(t, err)
-		require.Equal(t, "Article not found", responseBody["error"])
+		require.Equal(t, "Not convertable payload", responseBody["error"])
 	})
 
-	// Internal Server Error
+	// Validation failure
+	t.Run("Validation Failure", func(t *testing.T) {
+		ginEngine := gin.Default()
+		handler := controller.Init(&mocks.IService{}, logger)
+		controller.SetupRoutes(ginEngine, handler)
+
+		articleExtFormat := adapter.ArticleExternalFormat{
+			Title: "",
+			Body:  "Sample Body",
+			Date:  "2023-01-01",
+			Tags:  []string{"Tag1", "Tag2"},
+		}
+		body, err := json.Marshal(articleExtFormat)
+		require.Nil(t, err)
+
+		req, err := http.NewRequest("POST", "/articles", bytes.NewBuffer(body))
+		require.Nil(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		respRecorder := httptest.NewRecorder()
+		ginEngine.ServeHTTP(respRecorder, req)
+
+		require.Equal(t, http.StatusBadRequest, respRecorder.Code)
+
+		var responseBody map[string]interface{}
+		err = json.Unmarshal(respRecorder.Body.Bytes(), &responseBody)
+		require.Nil(t, err)
+		require.Equal(t, "Not allowed payload", responseBody["error"])
+	})
+
+	// Internal server error
 	t.Run("Internal Server Error", func(t *testing.T) {
 		mockService := &mocks.IService{}
-		mockService.On("GetArticle", mock.AnythingOfType("uint")).Return(nil, errors.New("database error"))
+		mockService.On("CreateArticle", mock.Anything).Return(errors.New("database error"))
 
 		ginEngine := gin.Default()
 		handler := controller.Init(mockService, logger)
 		controller.SetupRoutes(ginEngine, handler)
 
-		respRecorder := httptest.NewRecorder()
-		req, err := http.NewRequest("GET", "/articles/1", nil)
+		articleExtFormat := adapter.ArticleExternalFormat{
+			Title: "Sample Title",
+			Body:  "Sample Body",
+			Date:  "2023-01-01",
+			Tags:  []string{"Tag1", "Tag2"},
+		}
+		body, err := json.Marshal(articleExtFormat)
 		require.Nil(t, err)
 
+		req, err := http.NewRequest("POST", "/articles", bytes.NewBuffer(body))
+		require.Nil(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		respRecorder := httptest.NewRecorder()
 		ginEngine.ServeHTTP(respRecorder, req)
 
 		require.Equal(t, http.StatusInternalServerError, respRecorder.Code)
@@ -130,6 +165,6 @@ func TestGetArticleHandler(t *testing.T) {
 		var responseBody map[string]interface{}
 		err = json.Unmarshal(respRecorder.Body.Bytes(), &responseBody)
 		require.Nil(t, err)
-		require.Equal(t, "Internal error", responseBody["error"])
+		require.Equal(t, "Failed to save article", responseBody["error"])
 	})
 }
