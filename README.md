@@ -90,3 +90,7 @@ curl http://localhost:8080/articles/1
 ```bash
 curl http://localhost:8080/tags/golang/2024-10-10
 ```
+or
+```bash
+curl http://localhost:8080/tags/golang/20241010
+```
