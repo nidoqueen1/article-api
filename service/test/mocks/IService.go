@@ -54,8 +54,8 @@ func (_m *IService) GetArticle(articleID uint) (*entity.Article, error) {
 	return r0, r1
 }
 
-// GetArticlesByTagDate provides a mock function with given fields: tagName, date
-func (_m *IService) GetArticlesByTagDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
+// GetArticlesByTagAndDate provides a mock function with given fields: tagName, date
+func (_m *IService) GetArticlesByTagAndDate(tagName string, date time.Time) ([]*entity.Article, int64, error) {
 	ret := _m.Called(tagName, date)
 
 	var r0 []*entity.Article
