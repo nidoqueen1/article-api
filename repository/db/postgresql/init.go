@@ -43,6 +43,7 @@ func Init(logger *logrus.Logger) (db.IDatabase, error) {
 	return New(db, logger), nil
 }
 
+// Returns postgresql object implementing IDatabase methods
 func New(db *gorm.DB, logger *logrus.Logger) db.IDatabase {
 	return &postgresql{
 		db:     db,
