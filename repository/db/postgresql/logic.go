@@ -1,47 +1,59 @@
 package postgresql
 
 import (
-	"errors"
-	"time"
+    "errors"
+    "fmt"
+    "strings"
+    "time"
 
-	"github.com/nidoqueen1/article-api/entity"
-	"github.com/spf13/viper"
-	"gorm.io/gorm"
+    "github.com/nidoqueen1/article-api/entity"
+    "github.com/spf13/viper"
+    "gorm.io/gorm"
 )
 
 // Stores a new article into database
 func (p *postgresql) CreateArticle(article *entity.Article) error {
-	tagNames := getTagNames(*article)
+    tagNames := getTagNames(*article)
 
-	// insert new Tags and return both new and existing Tag IDs by updating existing Tags
-	// raw query has been used because (*gorm.DB).Create returns ID only for the new entries by defaulf
-	var tagIDs []uint
-	query := `
-		INSERT INTO tags (name)
-		VALUES (?)
-		ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name 
-		RETURNING id`
+    // insert new Tags and return both new and existing Tag IDs by updating existing Tags
+    // raw query has been used because (*gorm.DB).Create returns ID only for the new entries by defaulf
+    var tagIDs []uint
+    query := `
+        INSERT INTO tags (name)
+        VALUES %s
+        ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name 
+        RETURNING id`
 
-	for _, tagName := range tagNames {
-		var id uint
-		if err := p.db.Raw(query, tagName).Scan(&id).Error; err != nil {
-			return err
-		}
-		tagIDs = append(tagIDs, id)
-	}
+    valueStrings := make([]string, 0, len(tagNames))
+    for _, tagName := range tagNames {
+        valueStrings = append(valueStrings, fmt.Sprintf("('%s')", tagName))
+    }
 
-	// insert the article without tags first, clearing tags to avoid auto-insertion them
-	article.Tags = nil
-	if err := p.db.Create(article).Error; err != nil {
-		return err
-	}
+    query = fmt.Sprintf(query, strings.Join(valueStrings, ", "))
+    if err := p.db.Raw(query).Scan(&tagIDs).Error; err != nil {
+        return err
+    }
 
-	// then insert article_tag relationships
-	for _, tagID := range tagIDs {
-		if err := p.db.Exec("INSERT INTO article_tags (article_id, tag_id) VALUES (?, ?)", article.ID, tagID).Error; err != nil {
-			return err
-		}
-	}
+    // insert the article without tags first, clearing tags to avoid auto-insertion them
+    article.Tags = nil
+    if err := p.db.Create(article).Error; err != nil {
+        return err
+    }
+
+    // then insert article_tag relationships
+    relationshipQuery := `
+        INSERT INTO article_tags (article_id, tag_id)
+        VALUES %s`
+    
+    articleTagValues := make([]string, 0, len(tagIDs))
+    for _, tagID := range tagIDs {
+        articleTagValues = append(articleTagValues, fmt.Sprintf("(%d, %d)", article.ID, tagID))
+    }
+
+    relationshipQuery = fmt.Sprintf(relationshipQuery, strings.Join(articleTagValues, ", "))
+    if err := p.db.Exec(relationshipQuery).Error; err != nil {
+        return err
+    }
 
 	return nil
 }
